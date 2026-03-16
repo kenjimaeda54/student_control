@@ -5,203 +5,119 @@
 //  Created by kenjimaeda on 05/03/26.
 //
 
-import Foundation
-
-import SwiftUI
-
-import SwiftUI
-internal import Combine
-
 import SwiftUI
 import FamilyControls
-//
-//struct TeacherScreen: View {
-//    @State private var sessionDuration: Double = 45
-//    @State private var timeRemaining: Int = 0
-//    @State private var isLockActive: Bool = false
-//    @State private var studentReady: Bool = false
-//    
-//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-//
-//    var body: some View {
-//        NavigationView {
-//            VStack(spacing: 25) {
-//                HStack {
-//                    VStack(alignment: .leading) {
-//                        Text("Status da Conexão").font(.caption).foregroundColor(.secondary)
-//                        Text(studentReady ? "ALUNO PRONTO" : "AGUARDANDO ALUNO...")
-//                            .font(.headline).foregroundColor(studentReady ? .green : .orange)
-//                    }
-//                    Spacer()
-//                    Circle().fill(studentReady ? Color.green : Color.orange).frame(width: 12, height: 12)
-//                }
-//                .padding().background(Color.secondary.opacity(0.1)).cornerRadius(15)
-//
-//                VStack {
-//                    Text("Duração da Aula").font(.headline)
-//                    Text("\(timeRemaining > 0 ? formatTime(timeRemaining) : "\(Int(sessionDuration)) min")")
-//                        .font(.system(size: 40, weight: .bold, design: .monospaced))
-//                    
-//                    Slider(value: $sessionDuration, in: 5...120, step: 5)
-//                        .disabled(isLockActive)
-//                }.padding()
-//
-//                VStack(spacing: 15) {
-//                    Button(action: { startFocusSession() }) {
-//                        Label("Iniciar Aula & Bloquear", systemImage: "lock.fill")
-//                            .bold().frame(maxWidth: .infinity).padding().background(studentReady && !isLockActive ? Color.blue : Color.gray).foregroundColor(.white).cornerRadius(12)
-//                    }.disabled(!studentReady || isLockActive)
-//
-//                    Button(action: { cancelSession() }) {
-//                        Label("Cancelar / Finalizar", systemImage: "lock.open.fill")
-//                            .bold().frame(maxWidth: .infinity).padding().background(isLockActive ? Color.red.opacity(0.1) : Color.clear).foregroundColor(isLockActive ? .red : .gray).cornerRadius(12)
-//                            .overlay(RoundedRectangle(cornerRadius: 12).stroke(isLockActive ? Color.red : Color.gray))
-//                    }.disabled(!isLockActive)
-//                }
-//                
-//                Spacer()
-//            }
-//            .padding()
-//            .navigationTitle("Professor")
-//            .onReceive(timer) { _ in
-//                if isLockActive && timeRemaining > 0 {
-//                    timeRemaining -= 1
-//                    if timeRemaining == 0 { cancelSession() }
-//                }
-//            }
-//            .onAppear() {
-////                // "Vigie a gaveta chamada status_do_aluno"
-////                    BancoDeDados.ouvir("status_do_aluno") { novoValor in
-////                        if novoValor == "READY" {
-////                            self.studentReady = true  // Isso libera o botão na tela!
-////                        } else if novoValor == "WAITING" {
-////                            self.studentReady = false // Bloqueia o botão novamente
-////                        }
-////                    }
-////                {
-////                  "aula_id_01": {
-////                    "status_do_aluno": "READY",
-////                    "bloqueio_ativo": false,
-////                    "tempo_restante": 45
-////                  }
-////                }
-//            }
-//        }
-//    }
-//
-//    func startFocusSession() {
-//        isLockActive = true
-//        timeRemaining = Int(sessionDuration) * 60
-//        
-//        StudentShieldManager.shared.activateShield()
-//    }
-//
-//    func cancelSession() {
-//        isLockActive = false
-//        timeRemaining = 0
-//        
-//        StudentShieldManager.shared.deactivateShield()
-//    }
-//    
-//    func formatTime(_ seconds: Int) -> String {
-//        let m = seconds / 60
-//        let s = seconds % 60
-//        return String(format: "%02d:%02d", m, s)
-//    }
-//}
-//#Preview {
-//    TeacherScreen()
-//}
-//
-
-
-import SwiftUI
 
 struct TeacherScreen: View {
-    
+
     @StateObject private var manager = StudentShieldManager.shared
-    
+
     @State private var sessionDuration: Double = 45
-    @State private var timeRemaining: Int = 0
-    
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+
     var body: some View {
-        
         NavigationView {
-            
-            VStack(spacing: 25) {
-                
-                connectionStatus
-                
+            VStack(spacing: 20) {
+                studentStatusCard
                 durationControl
-                
                 controlButtons
-                
                 Spacer()
             }
             .padding()
             .navigationTitle("Professor")
-            .onReceive(timer) { _ in updateTimer() }
         }
     }
-    
-    var connectionStatus: some View {
-        
-        HStack {
-            
-            VStack(alignment: .leading) {
-                
-                Text("Status")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                if manager.isSelectionValid {
-                    Text("ALUNO PRONTO")
-                        .foregroundColor(.green)
+
+
+    var studentStatusCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+
+            Text("Status do Aluno")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(studentStatusLabel)
                         .bold()
-                    
-                } else if !manager.selection.applicationTokens.isEmpty {
-                    Text("SELEÇÃO INVÁLIDA")
-                        .foregroundColor(.red)
-                        .bold()
-                    
-                } else {
-                    Text("AGUARDANDO ALUNO")
+                        .foregroundColor(studentStatusColor)
+
+                    if manager.isLessonActive {
+                        Text(formatTime(manager.timeRemaining))
+                            .font(.system(size: 28, weight: .bold, design: .monospaced))
+                            .foregroundColor(.primary)
+                    }
+                }
+
+                Spacer()
+
+                Circle()
+                    .fill(studentStatusColor)
+                    .frame(width: 12)
+            }
+
+            if manager.exitRequested && !manager.canExit {
+                Divider()
+
+                HStack(spacing: 12) {
+                    Image(systemName: "hand.raised.fill")
                         .foregroundColor(.orange)
-                        .bold()
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Aluno solicitou encerramento")
+                            .font(.subheadline).bold()
+                        Text("Libere para permitir que ele encerre a aula.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+
+                    Spacer()
+
+                    Button {
+                        grantExit()
+                    } label: {
+                        Text("Liberar")
+                            .bold()
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.orange)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                    }
                 }
             }
-            
-            Spacer()
-            
-            Circle()
-                .fill(manager.isSelectionValid ? Color.green : Color.orange)
-                .frame(width: 12)
         }
         .padding()
-        .background(Color.secondary.opacity(0.1))
+        .background(Color.secondary.opacity(0.08))
         .cornerRadius(12)
     }
-    
+
+    // MARK: - Duration Control
+
     var durationControl: some View {
-        
-        VStack {
-            
-            Text("Duração da Aula")
-            
-            Text(timeRemaining > 0 ? formatTime(timeRemaining) : "\(Int(sessionDuration)) min")
-                .font(.system(size: 40, weight: .bold, design: .monospaced))
-            
+        VStack(spacing: 8) {
+            HStack {
+                Text("Duração da Aula")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text("\(Int(sessionDuration)) min")
+                    .font(.subheadline).bold()
+            }
+
             Slider(value: $sessionDuration, in: 5...120, step: 5)
                 .disabled(manager.isLessonActive)
         }
+        .padding()
+        .background(Color.secondary.opacity(0.08))
+        .cornerRadius(12)
     }
-    
+
+    // MARK: - Control Buttons
+
     var controlButtons: some View {
-        
-        VStack(spacing: 15) {
-            
+        VStack(spacing: 12) {
+
+            // iniciar aula — só disponível quando aluno está pronto
             Button {
                 startSession()
             } label: {
@@ -209,30 +125,32 @@ struct TeacherScreen: View {
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(canStart ? Color.blue : Color.gray)
+                    .background(canStart ? Color.blue : Color.gray.opacity(0.3))
                     .foregroundColor(.white)
                     .cornerRadius(12)
             }
             .disabled(!canStart)
-            
+
             if manager.isLessonActive {
-                
+
+                // pausar / retomar bloqueio
                 Button {
                     toggleLock()
                 } label: {
                     Label(
                         manager.isLockedByProfessor ? "Retomar Bloqueio" : "Pausar Bloqueio",
-                        systemImage: manager.isLockedByProfessor ? "lock.slash" : "lock.open"
+                        systemImage: manager.isLockedByProfessor ? "lock.fill" : "lock.open"
                     )
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.orange.opacity(0.2))
+                    .background(Color.orange.opacity(0.12))
                     .foregroundColor(.orange)
                     .cornerRadius(12)
                 }
             }
-            
+
+            // finalizar aula
             Button {
                 cancelSession()
             } label: {
@@ -240,44 +158,91 @@ struct TeacherScreen: View {
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .foregroundColor(.red)
+                    .foregroundColor(manager.isLessonActive ? .red : .gray)
             }
             .disabled(!manager.isLessonActive)
         }
     }
-    
+
+    // MARK: - Helpers
+
     var canStart: Bool {
         manager.isSelectionValid && !manager.isLessonActive
     }
-    
-    func startSession() {
-        timeRemaining = Int(sessionDuration * 60)
-        manager.startLesson()
+
+    var studentStatusLabel: String {
+        if manager.canExit { return "SAÍDA LIBERADA" }
+        if manager.exitRequested { return "SOLICITANDO SAÍDA" }
+        if manager.isLessonActive { return "AULA EM ANDAMENTO" }
+        if manager.isSelectionValid { return "ALUNO PRONTO" }
+        if !manager.selection.applicationTokens.isEmpty { return "SELEÇÃO INVÁLIDA" }
+        return "AGUARDANDO ALUNO"
     }
-    
+
+    var studentStatusColor: Color {
+        if manager.canExit { return .green }
+        if manager.exitRequested { return .orange }
+        if manager.isLessonActive { return .blue }
+        if manager.isSelectionValid { return .green }
+        return .orange
+    }
+
+    func startSession() {
+        let duration = Int(sessionDuration * 60)
+
+//        // 🔌 quando backend estiver pronto, substituir por:
+//        Task {
+//            var request = URLRequest(url: URL(string: "https://seubackend.com/start-lesson")!)
+//            request.httpMethod = "POST"
+//            let body = ["student_id": "ID_DO_ALUNO", "duration": duration] as [String: Any]
+//            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+//            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            try? await URLSession.shared.data(for: request)
+//            // backend emite WebSocket pro aluno → startLesson(duration:) é chamado lá
+//        }
+
+        // 🔌 remover simulação quando backend estiver pronto
+        manager.startLesson(duration: duration)
+    }
+
     func cancelSession() {
-        timeRemaining = 0
+//        // 🔌 quando backend estiver pronto, substituir por:
+//        Task {
+//            var request = URLRequest(url: URL(string: "https://seubackend.com/stop-lesson")!)
+//            request.httpMethod = "POST"
+//            let body = ["student_id": "ID_DO_ALUNO"]
+//            request.httpBody = try? JSONEncoder().encode(body)
+//            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            try? await URLSession.shared.data(for: request)
+//        }
+
+        // 🔌 remover simulação quando backend estiver pronto
         manager.stopLesson()
     }
-    
+
     func toggleLock() {
         manager.setProfessorLock(active: !manager.isLockedByProfessor)
     }
-    
-    func updateTimer() {
-        
-        guard manager.isLessonActive else { return }
-        
-        if timeRemaining > 0 {
-            timeRemaining -= 1
-        } else {
-            cancelSession()
-        }
+
+    func grantExit() {
+//        // 🔌 quando backend estiver pronto, substituir por:
+//        Task {
+//            var request = URLRequest(url: URL(string: "https://seubackend.com/grant-exit")!)
+//            request.httpMethod = "POST"
+//            let body = ["student_id": "ID_DO_ALUNO"]
+//            request.httpBody = try? JSONEncoder().encode(body)
+//            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//            try? await URLSession.shared.data(for: request)
+//            // backend emite WebSocket pro aluno → canExit = true é setado lá
+//        }
+
+        // 🔌 remover simulação quando backend estiver pronto
+        manager.canExit = true
     }
-    
+
     func formatTime(_ s: Int) -> String {
         let m = s / 60
-        let s = s % 60
-        return String(format: "%02d:%02d", m, s)
+        let sec = s % 60
+        return String(format: "%02d:%02d", m, sec)
     }
 }
