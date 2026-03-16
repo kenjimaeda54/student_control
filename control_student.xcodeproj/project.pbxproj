@@ -6,11 +6,59 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		81E52C882F65FEEA00B01614 /* MOPIReport.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 81E52C7C2F65FEEA00B01614 /* MOPIReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		81E52C9C2F662E1A00B01614 /* ScreenshotSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 81E52C9B2F662E1A00B01614 /* ScreenshotSwiftUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		81E52C862F65FEEA00B01614 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 81E93C692F5A35FA00085F91 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 81E52C7B2F65FEEA00B01614;
+			remoteInfo = MOPIReport;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		81E52C8D2F65FEEA00B01614 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				81E52C882F65FEEA00B01614 /* MOPIReport.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		81E52C7C2F65FEEA00B01614 /* MOPIReport.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = MOPIReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		81E93C712F5A35FA00085F91 /* control_student.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = control_student.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		81E52C892F65FEEA00B01614 /* Exceptions for "MOPIReport" folder in "MOPIReport" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 81E52C7B2F65FEEA00B01614 /* MOPIReport */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		81E52C7D2F65FEEA00B01614 /* MOPIReport */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				81E52C892F65FEEA00B01614 /* Exceptions for "MOPIReport" folder in "MOPIReport" target */,
+			);
+			path = MOPIReport;
+			sourceTree = "<group>";
+		};
 		81E93C732F5A35FA00085F91 /* control_student */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = control_student;
@@ -19,20 +67,37 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		81E93C6E2F5A35FA00085F91 /* Frameworks */ = {
+		81E52C792F65FEEA00B01614 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		81E93C6E2F5A35FA00085F91 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81E52C9C2F662E1A00B01614 /* ScreenshotSwiftUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		81E52C9A2F662E1A00B01614 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		81E93C682F5A35FA00085F91 = {
 			isa = PBXGroup;
 			children = (
 				81E93C732F5A35FA00085F91 /* control_student */,
+				81E52C7D2F65FEEA00B01614 /* MOPIReport */,
+				81E52C9A2F662E1A00B01614 /* Frameworks */,
 				81E93C722F5A35FA00085F91 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				81E93C712F5A35FA00085F91 /* control_student.app */,
+				81E52C7C2F65FEEA00B01614 /* MOPIReport.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +114,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		81E52C7B2F65FEEA00B01614 /* MOPIReport */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 81E52C8A2F65FEEA00B01614 /* Build configuration list for PBXNativeTarget "MOPIReport" */;
+			buildPhases = (
+				81E52C782F65FEEA00B01614 /* Sources */,
+				81E52C792F65FEEA00B01614 /* Frameworks */,
+				81E52C7A2F65FEEA00B01614 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				81E52C7D2F65FEEA00B01614 /* MOPIReport */,
+			);
+			name = MOPIReport;
+			packageProductDependencies = (
+			);
+			productName = MOPIReport;
+			productReference = 81E52C7C2F65FEEA00B01614 /* MOPIReport.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
 		81E93C702F5A35FA00085F91 /* control_student */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 81E93C7C2F5A35FB00085F91 /* Build configuration list for PBXNativeTarget "control_student" */;
@@ -55,16 +143,19 @@
 				81E93C6D2F5A35FA00085F91 /* Sources */,
 				81E93C6E2F5A35FA00085F91 /* Frameworks */,
 				81E93C6F2F5A35FA00085F91 /* Resources */,
+				81E52C8D2F65FEEA00B01614 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				81E52C872F65FEEA00B01614 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				81E93C732F5A35FA00085F91 /* control_student */,
 			);
 			name = control_student;
 			packageProductDependencies = (
+				81E52C9B2F662E1A00B01614 /* ScreenshotSwiftUI */,
 			);
 			productName = control_student;
 			productReference = 81E93C712F5A35FA00085F91 /* control_student.app */;
@@ -80,6 +171,9 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					81E52C7B2F65FEEA00B01614 = {
+						CreatedOnToolsVersion = 26.3;
+					};
 					81E93C702F5A35FA00085F91 = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -94,17 +188,28 @@
 			);
 			mainGroup = 81E93C682F5A35FA00085F91;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				81E52C992F662C0800B01614 /* XCRemoteSwiftPackageReference "ScreenshotSwiftUI" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 81E93C722F5A35FA00085F91 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				81E93C702F5A35FA00085F91 /* control_student */,
+				81E52C7B2F65FEEA00B01614 /* MOPIReport */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		81E52C7A2F65FEEA00B01614 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		81E93C6F2F5A35FA00085F91 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +220,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		81E52C782F65FEEA00B01614 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		81E93C6D2F5A35FA00085F91 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,7 +236,82 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		81E52C872F65FEEA00B01614 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 81E52C7B2F65FEEA00B01614 /* MOPIReport */;
+			targetProxy = 81E52C862F65FEEA00B01614 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		81E52C8B2F65FEEA00B01614 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = Yes;
+				CODE_SIGN_ENTITLEMENTS = MOPIReport/MOPIReport.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 445FVQQ2WW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MOPIReport/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MOPIReport;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kenjimaeda.controlstudent-app.MOPIReport";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		81E52C8C2F65FEEA00B01614 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = Yes;
+				CODE_SIGN_ENTITLEMENTS = MOPIReport/MOPIReport.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 445FVQQ2WW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MOPIReport/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MOPIReport;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kenjimaeda.controlstudent-app.MOPIReport";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		81E93C7A2F5A35FB00085F91 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -244,8 +431,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = control_student/control_student.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 445FVQQ2WW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -265,8 +455,9 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kenjimaeda.control-student";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kenjimaeda.controlstudent-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -286,8 +477,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = control_student/control_student.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 445FVQQ2WW;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -307,8 +501,9 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.kenjimaeda.control-student";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kenjimaeda.controlstudent-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -326,6 +521,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		81E52C8A2F65FEEA00B01614 /* Build configuration list for PBXNativeTarget "MOPIReport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81E52C8B2F65FEEA00B01614 /* Debug */,
+				81E52C8C2F65FEEA00B01614 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		81E93C6C2F5A35FA00085F91 /* Build configuration list for PBXProject "control_student" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -345,6 +549,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		81E52C992F662C0800B01614 /* XCRemoteSwiftPackageReference "ScreenshotSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gualtierofrigerio/ScreenshotSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		81E52C9B2F662E1A00B01614 /* ScreenshotSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81E52C992F662C0800B01614 /* XCRemoteSwiftPackageReference "ScreenshotSwiftUI" */;
+			productName = ScreenshotSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 81E93C692F5A35FA00085F91 /* Project object */;
 }

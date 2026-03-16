@@ -1,0 +1,15 @@
+{
+  "originHash" : "37a604d9a1a04b58c7f22b86813d1858b6e9f3023562660701a5498da5dbaa40",
+  "pins" : [
+    {
+      "identity" : "screenshotswiftui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/gualtierofrigerio/ScreenshotSwiftUI.git",
+      "state" : {
+        "revision" : "5ce615b99effcf41c17a4357d17ccb1308f281a9",
+        "version" : "0.3.0"
+      }
+    }
+  ],
+  "version" : 3
+}
