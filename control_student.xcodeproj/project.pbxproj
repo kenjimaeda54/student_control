@@ -41,6 +41,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		81CBA7332F68C24300C06CC3 /* Exceptions for "control_student" folder in "control_student" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"control-student-Info.plist",
+			);
+			target = 81E93C702F5A35FA00085F91 /* control_student */;
+		};
 		81E52C892F65FEEA00B01614 /* Exceptions for "MOPIReport" folder in "MOPIReport" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -61,6 +68,9 @@
 		};
 		81E93C732F5A35FA00085F91 /* control_student */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				81CBA7332F68C24300C06CC3 /* Exceptions for "control_student" folder in "control_student" target */,
+			);
 			path = control_student;
 			sourceTree = "<group>";
 		};
@@ -440,6 +450,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "control-student-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -486,6 +497,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "control-student-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

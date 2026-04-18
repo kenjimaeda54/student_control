@@ -52,46 +52,52 @@ class StudentShieldManager: ObservableObject {
     // MARK: - Backend
 
     func confirmSelectionApps(screenshot: UIImage) async -> Bool {
-        guard let imageData = screenshot.jpegData(compressionQuality: 0.8) else {
+        guard let imageData = screenshot.jpegData(compressionQuality: 0.9) else {
             print("❌ Erro ao converter imagem")
             return false
         }
 
-//        var request = URLRequest(url: URL(string: "https://seubackend.com/validate-apps")!)
-//        request.httpMethod = "POST"
-//
-//        let boundary = UUID().uuidString
-//        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-//
-//        var body = Data()
-//        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-//        body.append("Content-Disposition: form-data; name=\"screenshot\"; filename=\"apps.jpg\"\r\n".data(using: .utf8)!)
-//        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-//        body.append(imageData)
-//        body.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-//        body.append("Content-Disposition: form-data; name=\"student_id\"\r\n\r\n".data(using: .utf8)!)
-//        body.append("ID_DO_ALUNO\r\n".data(using: .utf8)!)
-//        body.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-//        request.httpBody = body
-//
-//        do {
-//            let (_, response) = try await URLSession.shared.data(for: request)
-//            if let httpResponse = response as? HTTPURLResponse,
-//               httpResponse.statusCode == 200 {
-//                DispatchQueue.main.async {
-//                    self.hasConfirmedVisualList = true
-//                }
-//                return true
-//            }
-//            return false
-//        } catch {
-//            print("❌ Erro ao enviar: \(error)")
-//            return false
-//        }
+        // mas em disddpositivo físico use o IP da sua máquina)
+        guard let url = URL(string: "http://192.168.100.10:8080/validate-apps") else { return false }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
 
-        // 🔌 remover simulação quando backend estiver pronto
-        await MainActor.run { self.hasConfirmedVisualList = true }
-        return true
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"screenshot\"; filename=\"apps.jpg\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData)
+        body.append("\r\n".data(using: .utf8)!)
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else { return false }
+            
+            if httpResponse.statusCode == 200 {
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let status = json["status"] as? String {
+                    
+                    await MainActor.run {
+                        self.hasConfirmedVisualList = (status == "approved")
+                    }
+                    return status == "approved"
+                }
+                return false
+            } else {
+                print("⚠️ Erro do servidor: \(httpResponse.statusCode)")
+                return false
+            }
+        } catch {
+            print("❌ Erro ao enviar: \(error)")
+            return false
+        }
     }
 
     func requestExit() async {
