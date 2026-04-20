@@ -12,9 +12,9 @@ import ManagedSettings
 import SwiftUI
 internal import Combine
 
-class StudentShieldManager: ObservableObject {
+class StudentShieldManagerBlockedAll: ObservableObject {
     
-    static let shared = StudentShieldManager()
+    static let shared = StudentShieldManagerBlockedAll()
     
     private let store = ManagedSettingsStore()
     private var webSocketTask: URLSessionWebSocketTask?
@@ -209,23 +209,34 @@ class StudentShieldManager: ObservableObject {
         updateShieldState()
     }
 
+    // Apenas updateShieldState muda — todo o resto permanece igual
+
     func updateShieldState() {
         guard isLessonActive else {
-            store.shield.applicationCategories = nil
-            store.shield.applications = nil
+            store.clearAllSettings()
             print("🔓 Shield desativado")
             return
         }
 
         if isLockedByProfessor {
-            store.shield.applicationCategories = nil
-            store.shield.applications = nil
+            store.clearAllSettings()
             print("⏸ Apps liberados pelo professor")
         } else {
+            // Bloqueia tudo — sem exceções
             store.shield.applicationCategories = .all()
-            store.shield.applications = selection.applicationTokens
-            print("🛡 Whitelist ativa")
+            store.shield.webDomainCategories = .all()
+            print("🛡 Bloqueio total ativo")
         }
+    }
+    
+    func startLessonWithoutScreenshot() async -> Bool {
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        await MainActor.run {
+            self.hasConfirmedVisualList = true
+            self.connectWebSocket()
+            self.startLesson(duration: 2700)
+        }
+        return true
     }
 
     // MARK: - Persist

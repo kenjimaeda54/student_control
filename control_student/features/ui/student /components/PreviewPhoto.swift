@@ -14,8 +14,9 @@ import SwiftUI
 import FamilyControls
 import ManagedSettings
 
+
 struct PreviewPhoto: View {
-    @ObservedObject var manager: StudentShieldManager
+    @ObservedObject var manager: StudentShieldManagerBlockNotAll
     @Binding var isSending: Bool
     @Binding var sentSuccess: Bool
     @Binding var showPreview: Bool

@@ -1,0 +1,62 @@
+import SwiftUI
+import FamilyControls
+import ManagedSettings
+import DeviceActivity
+
+class StudentShieldManagerBlockNotAll: ObservableObject {
+    static let shared = StudentShieldManagerBlockNotAll()
+    
+    @Published var selection = FamilyActivitySelection()
+    @Published var selectedImages: [Int: UIImage] = [:]
+    @Published var showLessonSheet = false
+    
+    private let store = ManagedSettingsStore()
+    
+    var isTechnicalSelectionValid: Bool {
+        // Valida se 3 apps foram selecionados e se as 4 imagens foram enviadas
+        return selection.applicationTokens.count == 3 && selectedImages.count == 4
+    }
+    
+    func requestAccess() async {
+        do {
+            try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+        } catch {
+            print("Erro ao solicitar autorização: \(error)")
+        }
+    }
+    
+    func startPreLessonTimer() {
+        // Para bloquear TUDO exceto os selecionados:
+        // 1. Pegamos todas as categorias
+        // 2. Removemos os tokens que estão na nossa 'selection'
+        
+        // Nota: No ManagedSettings, para fazer um "Whitelist", costumamos desencorajar o bloqueio total 
+        // em favor de configurar o shield para as categorias desejadas.
+        // Para bloquear "tudo menos o selecionado", configuramos o store.shield.applicationCategories 
+        // para .all() e removemos as exceções se a API permitir, ou bloqueamos categorias específicas.
+        
+        // Implementação de bloqueio invertido (Whitelist):
+        store.shield.applications = nil // Limpa anterior
+        
+        // Define que as aplicações selecionadas NÃO serão bloqueadas, 
+        // enquanto o resto (se configurado via DeviceActivity) será.
+        // No entanto, a forma mais comum de whitelist no iOS é usar o 'applicationTokens' 
+        // para identificar o que DEVE ser monitorado/bloqueado.
+        
+        // Para o seu caso específico (Whitelist):
+        // Bloqueamos todas as categorias EXCETO as que contêm os apps selecionados.
+        // E garantimos que os tokens específicos das aplicações selecionadas não sejam bloqueados.
+        
+        store.shield.applicationCategories = .all(except: selection.categoryTokens)
+        store.shield.applicationCategoryPolicy = .all(except: selection.categoryTokens)
+        store.shield.applications = nil
+        
+        print("🛡️ Bloqueio ativado (Whitelist mode)")
+    }
+    
+    func stopShielding() {
+        store.shield.applications = nil
+        store.shield.applicationCategories = nil
+        print("🔓 Bloqueio desativado")
+    }
+}

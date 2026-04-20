@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct LessonStatusSheet: View {
-    @ObservedObject var manager: StudentShieldManager
+    @ObservedObject var manager: StudentShieldManagerBlockedAll
 
     var body: some View {
         VStack(spacing: 32) {

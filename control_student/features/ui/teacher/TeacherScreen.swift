@@ -10,7 +10,7 @@ import FamilyControls
 
 struct TeacherScreen: View {
 
-    @StateObject private var manager = StudentShieldManager.shared
+    @StateObject private var manager = StudentShieldManagerBlockNotAll.shared
 
     @State private var sessionDuration: Double = 45
 
