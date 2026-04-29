@@ -8,15 +8,13 @@
 
 
 import ScreenshotSwiftUI
-
-import ScreenshotSwiftUI
 import SwiftUI
 import FamilyControls
 import ManagedSettings
 
 
 struct PreviewPhoto: View {
-    @ObservedObject var manager: StudentShieldManagerBlockNotAll
+    @ObservedObject var manager: StudentShieldManagerBlockedAll
     @Binding var isSending: Bool
     @Binding var sentSuccess: Bool
     @Binding var showPreview: Bool

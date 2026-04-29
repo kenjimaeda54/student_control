@@ -13,8 +13,8 @@
 import SwiftUI
 import FamilyControls
 
-struct StudentScreenBlockedAll: View {
-    @StateObject var manager = StudentShieldManagerBlockedAll.shared
+struct StudentScreen: View {
+    @StateObject var manager = StudentState()
     @State private var isSending = false
     @State private var sendError = false
     @State private var isPickerPresented = false

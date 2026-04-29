@@ -7,5 +7,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_mopiaula._tcp</string>
+		<string>_tcp</string>
+	</array>
 </dict>
 </plist>

@@ -34,11 +34,6 @@ class StudentShieldManagerBlockedAll: ObservableObject {
     @Published var exitRequested = false
     @Published var timeRemaining: Int = 0
     @Published var lessonStarted = false
-    
-    var isReadyToConfirm: Bool {
-        isTechnicalSelectionValid
-    }
-    
     var isTechnicalSelectionValid: Bool {
         let apps = selection.applicationTokens.count
         let noCategories = selection.categoryTokens.isEmpty
@@ -47,6 +42,55 @@ class StudentShieldManagerBlockedAll: ObservableObject {
     
     var isSelectionValid: Bool {
         isTechnicalSelectionValid && hasConfirmedVisualList
+    }
+    
+    
+    private func handleWebSocketEvent(_ json: [String: Any]) {
+        DispatchQueue.main.async {
+            guard let event = json["event"] as? String else { return }
+            
+            switch event {
+            case "student_ready": // Aluno terminou de selecionar os apps
+                self.hasConfirmedVisualList = true
+                
+            case "exit_requested": // Aluno apertou o botão "Pedir para sair"
+                self.exitRequested = true
+                
+            case "lesson_started":
+                let duration = json["duration"] as? Int ?? 2700
+                self.startLesson(duration: duration)
+                
+            case "exit_granted":
+                self.canExit = true
+                
+            default:
+                break
+            }
+        }
+    }
+    
+    func sendStartLesson(studentId: String, durationInSeconds: Int) async {
+        // 1. Chamada de API para o seu backend
+        // 2. O backend envia um Push/WebSocket para o aluno
+        // 3. Opcionalmente, você já atualiza o estado local se o professor e aluno estiverem no mesmo device (para testes)
+        await MainActor.run {
+            self.startLesson(duration: durationInSeconds)
+        }
+    }
+
+    func sendStopLesson(studentId: String) async {
+        // 1. Chamada de API: POST /stop-lesson
+        await MainActor.run {
+            self.stopLesson()
+        }
+    }
+
+    func sendGrantExit(studentId: String) async {
+        // 1. Chamada de API: POST /grant-exit
+        await MainActor.run {
+            self.canExit = true
+            self.exitRequested = false
+        }
     }
 
     // MARK: - Backend
@@ -138,27 +182,6 @@ class StudentShieldManagerBlockedAll: ObservableObject {
                 self.listenWebSocket()
             case .failure(let error):
                 print("❌ WebSocket erro: \(error)")
-            }
-        }
-    }
-
-    private func handleWebSocketEvent(_ json: [String: Any]) {
-        DispatchQueue.main.async {
-            // professor iniciou a aula → { "event": "lesson_started", "duration": 2700 }
-            if let event = json["event"] as? String {
-                switch event {
-                case "lesson_started":
-                    let duration = json["duration"] as? Int ?? 2700
-                    self.startLesson(duration: duration)
-
-                // professor liberou saída → { "event": "exit_granted" }
-                case "exit_granted":
-                    self.canExit = true
-                    print("✅ Professor liberou saída")
-
-                default:
-                    break
-                }
             }
         }
     }

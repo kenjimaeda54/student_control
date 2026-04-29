@@ -7,33 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		81E52C882F65FEEA00B01614 /* MOPIReport.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 81E52C7C2F65FEEA00B01614 /* MOPIReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		81194D0E2FA17A1D00EB2FDB /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = 81194D0D2FA17A1D00EB2FDB /* Swifter */; };
 		81E52C9C2F662E1A00B01614 /* ScreenshotSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 81E52C9B2F662E1A00B01614 /* ScreenshotSwiftUI */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		81E52C862F65FEEA00B01614 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 81E93C692F5A35FA00085F91 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 81E52C7B2F65FEEA00B01614;
-			remoteInfo = MOPIReport;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		81E52C8D2F65FEEA00B01614 /* Embed ExtensionKit Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
-			dstSubfolderSpec = 16;
-			files = (
-				81E52C882F65FEEA00B01614 /* MOPIReport.appex in Embed ExtensionKit Extensions */,
-			);
-			name = "Embed ExtensionKit Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		81E52C7C2F65FEEA00B01614 /* MOPIReport.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = MOPIReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +65,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81E52C9C2F662E1A00B01614 /* ScreenshotSwiftUI in Frameworks */,
+				81194D0E2FA17A1D00EB2FDB /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,12 +130,10 @@
 				81E93C6D2F5A35FA00085F91 /* Sources */,
 				81E93C6E2F5A35FA00085F91 /* Frameworks */,
 				81E93C6F2F5A35FA00085F91 /* Resources */,
-				81E52C8D2F65FEEA00B01614 /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				81E52C872F65FEEA00B01614 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				81E93C732F5A35FA00085F91 /* control_student */,
@@ -166,6 +141,7 @@
 			name = control_student;
 			packageProductDependencies = (
 				81E52C9B2F662E1A00B01614 /* ScreenshotSwiftUI */,
+				81194D0D2FA17A1D00EB2FDB /* Swifter */,
 			);
 			productName = control_student;
 			productReference = 81E93C712F5A35FA00085F91 /* control_student.app */;
@@ -200,6 +176,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				81E52C992F662C0800B01614 /* XCRemoteSwiftPackageReference "ScreenshotSwiftUI" */,
+				81194D062FA1717D00EB2FDB /* XCRemoteSwiftPackageReference "swifter" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 81E93C722F5A35FA00085F91 /* Products */;
@@ -245,14 +222,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		81E52C872F65FEEA00B01614 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 81E52C7B2F65FEEA00B01614 /* MOPIReport */;
-			targetProxy = 81E52C862F65FEEA00B01614 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		81E52C8B2F65FEEA00B01614 /* Debug */ = {
@@ -451,6 +420,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "control-student-Info.plist";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Precisamos de usar interent para funcionar app";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -498,6 +468,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "control-student-Info.plist";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Precisamos de usar interent para funcionar app";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -563,6 +534,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		81194D062FA1717D00EB2FDB /* XCRemoteSwiftPackageReference "swifter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/httpswift/swifter.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
 		81E52C992F662C0800B01614 /* XCRemoteSwiftPackageReference "ScreenshotSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/gualtierofrigerio/ScreenshotSwiftUI.git";
@@ -574,6 +553,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		81194D0D2FA17A1D00EB2FDB /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81194D062FA1717D00EB2FDB /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
 		81E52C9B2F662E1A00B01614 /* ScreenshotSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 81E52C992F662C0800B01614 /* XCRemoteSwiftPackageReference "ScreenshotSwiftUI" */;

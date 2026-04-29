@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct VerificationSheet: View {
-    @ObservedObject var manager: StudentShieldManagerBlockNotAll
+    @ObservedObject var manager: StudentShieldManagerBlockedAll
         @State private var isValidating = false
         
         // Estado para o seletor múltiplo
@@ -26,9 +26,9 @@ struct VerificationSheet: View {
                     .font(.headline)
 
                 VStack(spacing: 8) {
-                    Text(timeString(manager.preLessonTimerRemaining))
-                        .font(.system(size: 54, weight: .bold, design: .monospaced))
-                        .foregroundColor(.red)
+//                    Text(timeString(manager.preLessonTimerRemaining))
+//                        .font(.system(size: 54, weight: .bold, design: .monospaced))
+//                        .foregroundColor(.red)
                     
                     Text("O bloqueio já está ativo!")
                         .font(.subheadline.bold())
@@ -66,7 +66,7 @@ struct VerificationSheet: View {
                 Button {
                     Task {
                         isValidating = true
-                        manager.startLesson = true
+                        //manager.startLesson = true
                     }
                 } label: {
                     if isValidating {
@@ -84,10 +84,10 @@ struct VerificationSheet: View {
                 .disabled(selectedItems.isEmpty || isValidating) // Só ativa se tiver fotos
                 .padding(.horizontal)
                 .padding(.bottom, 30)
-                .sheet(isPresented: $manager.startLesson) {
-//                    LessonStatusSheet(manager: manager)
-//                        .interactiveDismissDisabled(true)
-                }
+//                .sheet(isPresented: $manager.startLesson) {
+////                    LessonStatusSheet(manager: manager)
+////                        .interactiveDismissDisabled(true)
+//                }
             }
         }
 
@@ -102,7 +102,7 @@ struct VerificationSheet: View {
                     }
                 }
                 await MainActor.run {
-                    manager.verificationImages = loadedImages
+                    //manager.verificationImages = loadedImages
                 }
             }
         }

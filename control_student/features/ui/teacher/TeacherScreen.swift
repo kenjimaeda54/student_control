@@ -9,9 +9,7 @@ import SwiftUI
 import FamilyControls
 
 struct TeacherScreen: View {
-
-    @StateObject private var manager = StudentShieldManagerBlockNotAll.shared
-
+    @StateObject private var manager = TeacherState()
     @State private var sessionDuration: Double = 45
 
     var body: some View {
@@ -117,19 +115,17 @@ struct TeacherScreen: View {
     var controlButtons: some View {
         VStack(spacing: 12) {
 
-            // iniciar aula — só disponível quando aluno está pronto
             Button {
-                startSession()
+                manager.startstartSession()
             } label: {
                 Label("Iniciar Aula", systemImage: "lock.fill")
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(canStart ? Color.blue : Color.gray.opacity(0.3))
+                    .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(12)
             }
-            .disabled(!canStart)
 
             if manager.isLessonActive {
 
@@ -175,7 +171,6 @@ struct TeacherScreen: View {
         if manager.exitRequested { return "SOLICITANDO SAÍDA" }
         if manager.isLessonActive { return "AULA EM ANDAMENTO" }
         if manager.isSelectionValid { return "ALUNO PRONTO" }
-        if !manager.selection.applicationTokens.isEmpty { return "SELEÇÃO INVÁLIDA" }
         return "AGUARDANDO ALUNO"
     }
 
@@ -187,23 +182,6 @@ struct TeacherScreen: View {
         return .orange
     }
 
-    func startSession() {
-        let duration = Int(sessionDuration * 60)
-
-//        // 🔌 quando backend estiver pronto, substituir por:
-//        Task {
-//            var request = URLRequest(url: URL(string: "https://seubackend.com/start-lesson")!)
-//            request.httpMethod = "POST"
-//            let body = ["student_id": "ID_DO_ALUNO", "duration": duration] as [String: Any]
-//            request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-//            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//            try? await URLSession.shared.data(for: request)
-//            // backend emite WebSocket pro aluno → startLesson(duration:) é chamado lá
-//        }
-
-        // 🔌 remover simulação quando backend estiver pronto
-        manager.startLesson(duration: duration)
-    }
 
     func cancelSession() {
 //        // 🔌 quando backend estiver pronto, substituir por:
@@ -217,11 +195,11 @@ struct TeacherScreen: View {
 //        }
 
         // 🔌 remover simulação quando backend estiver pronto
-        manager.stopLesson()
+        //manager.stopLesson()
     }
 
     func toggleLock() {
-        manager.setProfessorLock(active: !manager.isLockedByProfessor)
+        manager.setTeacherLook(active: !manager.isLockedByProfessor)
     }
 
     func grantExit() {
