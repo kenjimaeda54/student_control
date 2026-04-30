@@ -51,7 +51,6 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
     }
     
     func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
-        print("Found Teacher: \(service.name)")
         self.service = service
         self.service?.delegate = self
         self.service?.resolve(withTimeout: 5.0)
