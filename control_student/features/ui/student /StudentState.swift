@@ -12,12 +12,13 @@ import ManagedSettings
 import FamilyControls
 
 class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetServiceDelegate {
-    @Published var classStart: Bool = false
+    //@Published var classStart: Bool = false
     @Published var isLockedByProfessor = false
     @Published var teacherIP: String? = nil
     @Published var canExit = false
     @Published var exitRequested = false
     @Published var lessonStarted = false
+    @Published var inputCode: String = ""
     @Published var isLessonActive = false
     @Published var familyControlsAuthorized = false
     @Published var networkAuthorized = false
@@ -94,6 +95,10 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
             receiveMessage()
     }
     
+    func handleInvalidateCode(value: String) -> Bool {
+         inputCode != value
+    }
+    
     private func receiveMessage() {
             webSocketTask?.receive { [weak self] result in
                 switch result {
@@ -101,7 +106,8 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
                     switch message {
                     case .string(let text):
                         DispatchQueue.main.async {
-                            self?.classStart = (text == "true")
+                            self?.inputCode = text
+
                         }
                     default: break
                     }

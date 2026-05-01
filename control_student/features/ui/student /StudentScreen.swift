@@ -25,7 +25,6 @@ struct StudentScreen: View {
             VStack(spacing: 0) {
                 Spacer()
 
-                // MARK: - Ícone
                 Image(systemName: "loc/Confirmark.shield.fill")
                     .resizable()
                     .scaledToFit()
@@ -33,7 +32,6 @@ struct StudentScreen: View {
                     .foregroundColor(.blue)
                     .padding(.bottom, 24)
 
-                // MARK: - Título
                 Text("Modo Foco")
                     .font(.title).bold()
                     .padding(.bottom, 8)
@@ -46,7 +44,6 @@ struct StudentScreen: View {
 
                 Spacer().frame(height: 32)
 
-                // MARK: - Info bloqueio
                 VStack(spacing: 12) {
                     bloqueioItem(icon: "apps.iphone", text: "Todos os apps bloqueados")
                     bloqueioItem(icon: "safari", text: "Safari e navegadores bloqueados")
@@ -56,7 +53,6 @@ struct StudentScreen: View {
 
                 Spacer()
 
-                // MARK: - Footer
                 actionFooter
             }
             .navigationTitle("Estudo")

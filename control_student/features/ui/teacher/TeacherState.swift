@@ -13,14 +13,15 @@ import Network
 
 class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
     let server = HttpServer()
-    @Published var startClass = false
     @Published var exitRequested = false
     private var connectedSessions = Set<WebSocketSession>()
     @Published var isLessonActive = false
     @Published var canExit = false
+    @Published var codeStartClass: String = ""
     @Published var isServerRunning = false
     @Published var isLockedByProfessor = false
     @Published var timeRemaining: Int = 0
+    @Published var codeGenerateForStartClass: String = ""
     @Published var hasConfirmedVisualList = false
     var isTechnicalSelectionValid: Bool {
         
@@ -119,12 +120,20 @@ class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
     func netService(_ sender: NetService, didNotPublish errorDict: [String : NSNumber]) {
         print("❌ Erro ao anunciar serviço: \(errorDict)")
     }
+    
+    func generateRandomCode() -> String {
+        let num1 = Int.random(in: 0...10)
+        let num2 = Int.random(in: 0...10)
+        let num3 = Int.random(in: 0...10)
+        return "\(num1)\(num2)\(num3)"
+    }
 
     func startstartSession() {
+        let code = generateRandomCode()
+        codeStartClass = code
         DispatchQueue.main.async {
-                    self.startClass = true
                     for session in self.connectedSessions {
-                        session.writeText("true")
+                        session.writeText(code)
                     }
         }
     }
@@ -133,18 +142,12 @@ class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
        server["/wsStatus"] = websocket(
                connected: { [weak self] session in
                    self?.connectedSessions.insert(session)
-                   let initialState = self?.startClass == true ? "true" : "false"
-                   session.writeText(initialState)
+                   session.writeText("")
                },
                disconnected: { [weak self] session in
                    self?.connectedSessions.remove(session)
                }
            )
-
-    server["/start"] = { request in
-        self.startClass = true
-        return .ok(.json(["success": true] as AnyObject))
-    }
 
     do {
         try server.start(8080)

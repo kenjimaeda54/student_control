@@ -114,17 +114,28 @@ struct TeacherScreen: View {
 
     var controlButtons: some View {
         VStack(spacing: 12) {
-
-            Button {
-                manager.startstartSession()
-            } label: {
-                Label("Iniciar Aula", systemImage: "lock.fill")
+            
+            if !manager.codeStartClass.isEmpty {
+                Label("Codigo para iniciar aula é \(manager.codeStartClass)", systemImage: "key.fill")
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(Color.orange.opacity(0.12))
+                    .foregroundColor(.orange)
                     .cornerRadius(12)
+                    .transition(.opacity) // Suaviza a aparição
+            } else {
+                Button {
+                    manager.startstartSession()
+                } label: {
+                    Label("Iniciar Aula", systemImage: "lock.fill")
+                        .bold()
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
             }
 
             if manager.isLessonActive {
