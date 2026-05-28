@@ -11,11 +11,25 @@ internal import Combine
 import UIKit
 import Network
 
+struct StudentInfo: Identifiable {
+    let id: String // Usaremos o UUID do dispositivo como ID
+    let name: String
+    let code: String
+    var status: StudentStatus = .pending
+}
+
+enum StudentStatus: String {
+    case pending = "Pendente"
+    case failure = "Falha"
+    case ok = "Ok"
+}
+
 class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
     let server = HttpServer()
     @Published var exitRequested = false
     private var connectedSessions = Set<WebSocketSession>()
     @Published var isLessonActive = false
+    @Published var students: [StudentInfo] = []
     @Published var canExit = false
     @Published var codeStartClass: String = ""
     @Published var isServerRunning = false
@@ -122,9 +136,9 @@ class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
     }
     
     func generateRandomCode() -> String {
-        let num1 = Int.random(in: 0...10)
-        let num2 = Int.random(in: 0...10)
-        let num3 = Int.random(in: 0...10)
+        let num1 = Int.random(in: 0...9)
+        let num2 = Int.random(in: 0...9)
+        let num3 = Int.random(in: 0...9)
         return "\(num1)\(num2)\(num3)"
     }
 
@@ -148,6 +162,35 @@ class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
                    self?.connectedSessions.remove(session)
                }
            )
+       
+       server.post["/join"] = { [weak self] request in
+           let data = Data(request.body)
+           guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+                 let name = json["nome"],
+                 let code = json["codigo"],
+                 let uuid = json["uuid"] else {
+               return .badRequest(nil)
+           }
+           
+           let isCorrect = self?.codeStartClass == code
+           
+           DispatchQueue.main.async {
+               let status: StudentStatus = isCorrect ? .ok : .failure
+               
+               if let index = self?.students.firstIndex(where: { $0.id == uuid }) {
+                   self?.students[index].status = status
+               } else {
+                   let newStudent = StudentInfo(id: uuid, name: name, code: code, status: status)
+                   self?.students.append(newStudent)
+               }
+           }
+           
+           if isCorrect {
+               return .ok(.json(["status": "success"]))
+           } else {
+                return .ok(.json(["status": "Token incorreto digite o token fornecido pelo professor"]))
+           }
+       }
 
     do {
         try server.start(8080)

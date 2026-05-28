@@ -19,7 +19,7 @@ struct control_studentApp: App {
                     case .teacher:
                         TeacherScreen()
                     case .student:
-                        StudentScreen()
+                        StartClassScreen()
                     }
                 } else {
                     RoleSelectionScreen(onRoleSelected: { selectedRole in

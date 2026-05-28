@@ -83,6 +83,14 @@ struct StudentScreen: View {
         .cornerRadius(12)
     }
 
+    private func statusColor(_ status: StudentStatus) -> Color {
+        switch status {
+        case .pending: return .yellow
+        case .failure: return .red
+        case .ok: return .green
+        }
+    }
+
     private var actionFooter: some View {
         VStack(spacing: 12) {
             Divider()

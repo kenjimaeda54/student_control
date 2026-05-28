@@ -10,8 +10,9 @@ internal import Combine
 import Network
 import ManagedSettings
 import FamilyControls
+import CallKit
 
-class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetServiceDelegate {
+class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetServiceDelegate, CXCallObserverDelegate {
     //@Published var classStart: Bool = false
     @Published var isLockedByProfessor = false
     @Published var teacherIP: String? = nil
@@ -19,15 +20,23 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
     @Published var exitRequested = false
     @Published var lessonStarted = false
     @Published var inputCode: String = ""
+    @Published var studentName: String = ""
+    @Published var isNameLocked: Bool = false
+    @Published var isLoading: Bool = false
+    private var uuid: String? = nil
+    @Published var errorMessage: String? = nil
     @Published var isLessonActive = false
     @Published var familyControlsAuthorized = false
     @Published var networkAuthorized = false
     private var lessonTimerTask: Task<Void, Never>?
     @Published var timeRemaining: Int = 0
     @Published var connectionStatus: String = "Searching for Teacher..."
+    private let callObserver = CXCallObserver()
+    @Published var isInCall = false
     private var webSocketTask: URLSessionWebSocketTask?
     private let store = ManagedSettingsStore()
     private var browser: NetServiceBrowser?
+    private var withoutNetwork: Bool = false
     private var service: NetService?
     private var cancellables = Set<AnyCancellable>()
     @Published var selection = FamilyActivitySelection(includeEntireCategory: false) {
@@ -37,12 +46,38 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
     }
     @Published var hasConfirmedVisualList = false
     @Published var showLessonSheet = false
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: "AirplaneModeMonitor")
 
     
     override init() {
         super.init()
+        //MARK: - Monitorar  internet
+        //startMonitoring()
         startDiscovery()
+        callObserver.setDelegate(self, queue: .main)
     }
+    
+    
+    func callObserver(_ callObserver: CXCallObserver, callChanged call: CXCall) {
+            if call.hasConnected && !call.hasEnded {
+                isInCall = true
+                evaluateSecurityState()
+                
+            } else if call.hasEnded {
+                isInCall = false
+            }
+        }
+    
+    //MARK: - Monitorar  internet
+//    func startMonitoring() {
+//            monitor.pathUpdateHandler = { path in
+//                DispatchQueue.main.async {
+//                    self.evaluatePath(path)
+//                }
+//            }
+//            monitor.start(queue: queue)
+//        }
     
     func startDiscovery() {
         self.connectionStatus = "Scanning network..."
@@ -50,6 +85,105 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
         browser?.delegate = self
         browser?.searchForServices(ofType: "_mopiaula._tcp.", inDomain: "local.")
     }
+    
+    //MARK: - Montirar interenet
+//    private func evaluatePath(_ path: NWPath) {
+//        if path.status == .unsatisfied {
+//            let hasWifi = path.usesInterfaceType(.wifi)
+//            let hasCellular = path.usesInterfaceType(.cellular)
+//            let hasEthernet = path.usesInterfaceType(.wiredEthernet)
+//            
+//            if !hasWifi && !hasCellular && !hasEthernet {
+//                withoutNetwork = true
+//                onAirplaneModeActivated()
+//                evaluateSecurityState()
+//            }
+//        } else {
+//            withoutNetwork = false
+//            onAirplaneModeDeactivated()
+//        }
+//    }
+//    
+    
+    private func reportarAlert(tipo: String) {
+        guard let ip = teacherIP else {
+            saveAlertTeacher(tipo: tipo)
+            return
+        }
+        
+        let payload: [String: Any] = [
+            "tipo": tipo,
+            "timestamp": Date().ISO8601Format(),
+            "em_ligacao": isInCall,
+            "sem_rede": withoutNetwork,
+            "duracao_aula": timeRemaining
+        ]
+        
+        // Envia para o professor via WebSocket (já tem setup)
+        if let data = try? JSONSerialization.data(withJSONObject: payload),
+           let text = String(data: data, encoding: .utf8) {
+        }
+    }
+    
+    private func saveAlertTeacher(tipo: String) {
+        var log = ConnectionStorage.load()
+        log.lastDisconnected = Date()
+        ConnectionStorage.save(log)
+    }
+
+    
+    private func evaluateSecurityState() {
+        guard isLessonActive else { return }
+        
+        switch (withoutNetwork, isInCall) {
+            
+        case (true, true):
+            reportarAlert(tipo: "call_without_network")
+            
+        case (false, true):
+            reportarAlert(tipo: "call_during_lesson")
+            
+        case (true, false):
+            print("📴 Sem rede — aguardando...")
+            
+        case (false, false):
+            print("✅ Situação normal")
+        }
+    }
+    
+    private func onAirplaneModeActivated() {
+        var log = ConnectionStorage.load()
+           log.lastConnected = Date()
+           ConnectionStorage.save(log)
+           reportToServer(log: log)
+    }
+    
+    
+    private func onAirplaneModeDeactivated() {
+        var log = ConnectionStorage.load()
+        
+        guard let disconnected = log.lastDisconnected else {
+            return
+        }
+        
+        log.lastConnected = Date()
+        ConnectionStorage.save(log)
+        reportToServer(log: log)
+        ConnectionStorage.clear()
+    }
+    
+    private func reportToServer(log: ConnectionLog) {
+        guard let connected = log.lastConnected,
+              let disconnected = log.lastDisconnected else { return }
+        
+        let payload: [String: Any] = [
+            "last_connected": connected.ISO8601Format(),
+            "last_disconnected": disconnected.ISO8601Format(),
+        ]
+        
+    }
+
+
     
     func netServiceBrowser(_ browser: NetServiceBrowser, didFind service: NetService, moreComing: Bool) {
         self.service = service
@@ -92,40 +226,27 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
             let url = URL(string: "ws://\(ip):8080/wsStatus")!
             webSocketTask = URLSession.shared.webSocketTask(with: url)
             webSocketTask?.resume()
-            receiveMessage()
     }
     
-    func handleInvalidateCode(value: String) -> Bool {
-         inputCode != value
-    }
-    
-    private func receiveMessage() {
-            webSocketTask?.receive { [weak self] result in
-                switch result {
-                case .success(let message):
-                    switch message {
-                    case .string(let text):
-                        DispatchQueue.main.async {
-                            self?.inputCode = text
-
-                        }
-                    default: break
-                    }
-                    self?.receiveMessage()
-                    
-                case .failure(let error):
-                    print("Erro no WebSocket: \(error)")
-                }
-            }
-        }
     
     func fetchStatusWithRetry(attempts: Int = 3) async {
         guard let ip = teacherIP else { return }
         let url = URL(string: "http://\(ip):8080/status")!
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 5
+        let session = URLSession(configuration: config)
         
         for i in 0..<attempts {
             do {
-               
+                let (data, response) = try await session.data(from: url)
+                guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                    throw URLError(.badServerResponse)
+                }
+                
+                await MainActor.run {
+                    self.connectionStatus = "Connected to Teacher"
+                }
+                return
             } catch {
                 if i < attempts - 1 {
                     try? await Task.sleep(nanoseconds: 1_000_000_000)
@@ -216,14 +337,94 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
     }
     
     func startLessonWithoutScreenshot() async -> Bool {
-        try? await Task.sleep(nanoseconds: 500_000_000)
-        await MainActor.run {
-            self.hasConfirmedVisualList = true
-            self.startLesson(duration: 2700)
+        await MainActor.run { 
+            self.errorMessage = nil 
+            self.isLoading = true
         }
-        return true
+        
+        defer {
+            DispatchQueue.main.async { self.isLoading = false }
+        }
+        
+        let ip = teacherIP ?? ""
+        if ip.isEmpty || ip == "0.0.0.0" {
+            await MainActor.run {
+                self.errorMessage = "Professor não encontrado. Verifique se a aula foi iniciada e tente novamente."
+                self.startDiscovery() 
+            }
+            return false
+        }
+        
+        guard !studentName.isEmpty && !inputCode.isEmpty else { return false }
+        
+        let url = URL(string: "http://\(ip):8080/join")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 20
+        config.waitsForConnectivity = true
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        let session = URLSession(configuration: config)
+        
+        if uuid == nil {
+            uuid = UUID().uuidString
+        }
+        
+        let payload = ["nome": studentName, "codigo": inputCode, "uuid": uuid ?? ""]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+        
+        do {
+            let (data, response) = try await session.data(for: request)
+            let httpResponse = response as? HTTPURLResponse
+            
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let status = json["status"] as? String {
+                
+                if status == "success" && httpResponse?.statusCode == 200 {
+                    await MainActor.run {
+                        self.isNameLocked = true
+                        self.hasConfirmedVisualList = true
+                        self.errorMessage = nil
+                    }
+                    return true
+                } else {
+                    await MainActor.run {
+                        self.errorMessage = status 
+                        self.isNameLocked = true 
+                    }
+                    return false
+                }
+            }
+            
+            await MainActor.run { self.errorMessage = "Resposta inválida do servidor" }
+            return false
+            
+        } catch {
+            await MainActor.run { 
+                if (error as NSError).code == NSURLErrorTimedOut {
+                    self.errorMessage = "Tempo esgotado: Verifique se o professor iniciou a aula"
+                } else {
+                    self.errorMessage = "Erro de conexão com o servidor"
+                }
+            }
+            print("Erro ao validar entrada na aula: \(error)")
+            return false
+        }
     }
     
+    @MainActor
+    func triggerLocalNetworkPrivacyAlert() {
+        // Disparar uma busca mDNS ou um ping simples costuma forçar o alerta do iOS
+        startDiscovery()
+        
+        // Tentar um fetch rápido para garantir o gatilho
+        Task {
+            let _ = try? await URLSession.shared.data(from: URL(string: "http://255.255.255.255")!)
+        }
+    }
+
     @MainActor
     func requestAccess() async {
             do {

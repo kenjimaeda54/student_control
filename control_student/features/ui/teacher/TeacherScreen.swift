@@ -15,7 +15,6 @@ struct TeacherScreen: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                studentStatusCard
                 durationControl
                 controlButtons
                 Spacer()
@@ -26,68 +25,68 @@ struct TeacherScreen: View {
     }
 
 
-    var studentStatusCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-
-            Text("Status do Aluno")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(studentStatusLabel)
-                        .bold()
-                        .foregroundColor(studentStatusColor)
-
-                    if manager.isLessonActive {
-                        Text(formatTime(manager.timeRemaining))
-                            .font(.system(size: 28, weight: .bold, design: .monospaced))
-                            .foregroundColor(.primary)
-                    }
-                }
-
-                Spacer()
-
-                Circle()
-                    .fill(studentStatusColor)
-                    .frame(width: 12)
-            }
-
-            if manager.exitRequested && !manager.canExit {
-                Divider()
-
-                HStack(spacing: 12) {
-                    Image(systemName: "hand.raised.fill")
-                        .foregroundColor(.orange)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Aluno solicitou encerramento")
-                            .font(.subheadline).bold()
-                        Text("Libere para permitir que ele encerre a aula.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    Spacer()
-
-                    Button {
-                        grantExit()
-                    } label: {
-                        Text("Liberar")
-                            .bold()
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(Color.orange)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
-                }
-            }
-        }
-        .padding()
-        .background(Color.secondary.opacity(0.08))
-        .cornerRadius(12)
-    }
+//    var studentStatusCard: some View {
+//        VStack(alignment: .leading, spacing: 12) {
+//
+////            Text("Status do Aluno")
+////                .font(.caption)
+////                .foregroundColor(.secondary)
+////
+////            HStack {
+////                VStack(alignment: .leading, spacing: 4) {
+////                    Text(studentStatusLabel)
+////                        .bold()
+////                        .foregroundColor(studentStatusColor)
+////
+////                    if manager.isLessonActive {
+////                        Text(formatTime(manager.timeRemaining))
+////                            .font(.system(size: 28, weight: .bold, design: .monospaced))
+////                            .foregroundColor(.primary)
+////                    }
+////                }
+////
+////                Spacer()
+////
+////                Circle()
+////                    .fill(studentStatusColor)
+////                    .frame(width: 12)
+////            }
+//
+////            if manager.exitRequested && !manager.canExit {
+////                Divider()
+////
+////                HStack(spacing: 12) {
+////                    Image(systemName: "hand.raised.fill")
+////                        .foregroundColor(.orange)
+////
+////                    VStack(alignment: .leading, spacing: 2) {
+////                        Text("Aluno solicitou encerramento")
+////                            .font(.subheadline).bold()
+////                        Text("Libere para permitir que ele encerre a aula.")
+////                            .font(.caption)
+////                            .foregroundColor(.secondary)
+////                    }
+////
+////                    Spacer()
+////
+////                    Button {
+////                        grantExit()
+////                    } label: {
+////                        Text("Liberar")
+////                            .bold()
+////                            .padding(.horizontal, 14)
+////                            .padding(.vertical, 8)
+////                            .background(Color.orange)
+////                            .foregroundColor(.white)
+////                            .cornerRadius(8)
+////                    }
+////                }
+////            }
+////        }
+////        .padding()
+////        .background(Color.secondary.opacity(0.08))
+////        .cornerRadius(12)
+//    }
 
     // MARK: - Duration Control
 
@@ -168,10 +167,51 @@ struct TeacherScreen: View {
                     .foregroundColor(manager.isLessonActive ? .red : .gray)
             }
             .disabled(!manager.isLessonActive)
+
+            if !manager.students.isEmpty {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Alunos:")
+                        .font(.headline)
+                        .padding(.horizontal, 12)
+                    
+                    ScrollView {
+                        VStack(spacing: 8) {
+                            ForEach(manager.students) { student in
+                                HStack {
+                                    Text(student.name)
+                                        .font(.body)
+                                    Spacer()
+                                    Text(student.status.rawValue)
+                                        .font(.caption).bold()
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(statusColor(student.status))
+                                        .foregroundColor(.white)
+                                        .cornerRadius(8)
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                    }
+                    .frame(maxHeight: 200)
+                }
+                .padding(.top, 16)
+            }
         }
     }
 
     // MARK: - Helpers
+
+    private func statusColor(_ status: StudentStatus) -> Color {
+        switch status {
+        case .pending: return .yellow
+        case .failure: return .red
+        case .ok: return .green
+        }
+    }
 
     var canStart: Bool {
         manager.isSelectionValid && !manager.isLessonActive
