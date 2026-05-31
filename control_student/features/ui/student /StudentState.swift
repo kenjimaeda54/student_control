@@ -17,7 +17,6 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
     @Published var isLockedByProfessor = false
     @Published var teacherIP: String? = nil
     @Published var canExit = false
-    @Published var exitRequested = false
     @Published var lessonStarted = false
     @Published var inputCode: String = ""
     @Published var studentName: String = ""
@@ -267,13 +266,15 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
     
     func updateShieldState() {
         guard isLessonActive else {
-            store.clearAllSettings()
+            store.shield.applicationCategories = nil
+            store.shield.webDomainCategories = nil
             print("🔓 Shield desativado")
             return
         }
 
         if isLockedByProfessor {
-            store.clearAllSettings()
+            store.shield.applicationCategories = nil
+            store.shield.webDomainCategories = nil
             print("⏸ Apps liberados pelo professor")
         } else {
             // Bloqueia tudo — sem exceções
@@ -295,7 +296,6 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
     }
     
     func sendStopLesson(studentId: String) async {
-        // 1. Chamada de API: POST /stop-lesson
         await MainActor.run {
             self.stopLesson()
         }
@@ -306,24 +306,10 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
         lessonStarted = false
         isLockedByProfessor = false
         canExit = false
-        exitRequested = false
         timeRemaining = 0
         showLessonSheet = false
         lessonTimerTask?.cancel()
         updateShieldState()
-    }
-    
-    func requestExit() async {
-//        var request = URLRequest(url: URL(string: "https://seubackend.com/request-exit")!)
-//        request.httpMethod = "POST"
-//        let body = ["student_id": "ID_DO_ALUNO"]
-//        request.httpBody = try? JSONEncoder().encode(body)
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//        try? await URLSession.shared.data(for: request)
-
-        // 🔌 remover simulação quando backend estiver pronto
-        print("📤 Solicitação de saída enviada ao backend")
-        await MainActor.run { self.exitRequested = true }
     }
     
     func startLesson(duration: Int) {
@@ -333,7 +319,30 @@ class StudentState: NSObject, ObservableObject, NetServiceBrowserDelegate, NetSe
         isLockedByProfessor = false
         updateShieldState()
         startLessonTimer()
-        print("🎓 Aula iniciada — \(duration)s")
+    }
+
+    func notifyTeacherLessonStarted() async {
+        guard let ip = teacherIP, let studentUUID = uuid else { return }
+        let url = URL(string: "http://\(ip):8080/update-status")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let payload = ["uuid": studentUUID, "status": "Aula Iniciada"]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+            
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let duration = json["duracao"] as? Int {
+                await MainActor.run {
+                    self.startLesson(duration: duration)
+                }
+            }
+        } catch {
+            print("Erro ao notificar início de aula: \(error)")
+        }
     }
     
     func startLessonWithoutScreenshot() async -> Bool {

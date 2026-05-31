@@ -37,25 +37,6 @@ struct LessonStatusSheet: View {
 
             Spacer()
 
-            if manager.lessonStarted && !manager.exitRequested && !manager.canExit {
-                Button {
-                    Task { await manager.requestExit() }
-                } label: {
-                    Label("Solicitar Encerramento", systemImage: "hand.raised.fill")
-                        .bold()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.orange.opacity(0.15))
-                        .foregroundColor(.orange)
-                        .cornerRadius(12)
-                }
-            }
-
-            if manager.exitRequested && !manager.canExit {
-                Label("Aguardando aprovação do professor...", systemImage: "clock.fill")
-                    .foregroundColor(.orange)
-                    .font(.subheadline)
-            }
 
             Button {
                 manager.stopLesson()
@@ -77,26 +58,22 @@ struct LessonStatusSheet: View {
 
     private var statusIcon: String {
         if manager.canExit { return "checkmark.circle.fill" }
-        if manager.lessonStarted { return "lock.fill" }
-        return "clock.fill"
+        return "lock.fill"
     }
 
     private var statusColor: Color {
         if manager.canExit { return .green }
-        if manager.lessonStarted { return .blue }
-        return .orange
+        return .blue
     }
 
     private var statusTitle: String {
         if manager.canExit { return "Você pode sair!" }
-        if manager.lessonStarted { return "Aula em andamento" }
-        return "Aguardando início"
+        return "Aula em andamento"
     }
 
     private var statusSubtitle: String {
         if manager.canExit { return "O professor liberou seu encerramento." }
-        if manager.lessonStarted { return "Seus apps estão bloqueados durante a aula." }
-        return "O professor iniciará a aula em breve."
+        return "Seus apps estão bloqueados durante a aula."
     }
 
     private func formatTime(_ s: Int) -> String {

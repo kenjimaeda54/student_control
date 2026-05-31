@@ -21,7 +21,8 @@ struct StudentInfo: Identifiable {
 enum StudentStatus: String {
     case pending = "Pendente"
     case failure = "Falha"
-    case ok = "Ok"
+    case ok = "Pronto"
+    case started = "Aula Iniciada"
 }
 
 class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
@@ -34,7 +35,7 @@ class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
     @Published var codeStartClass: String = ""
     @Published var isServerRunning = false
     @Published var isLockedByProfessor = false
-    @Published var timeRemaining: Int = 0
+    @Published var timeRemaining: Int = 45 * 60
     @Published var codeGenerateForStartClass: String = ""
     @Published var hasConfirmedVisualList = false
     var isTechnicalSelectionValid: Bool {
@@ -153,6 +154,13 @@ class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
     }
     
    func startServer() {
+       server["/status"] = { _ in
+           return .ok(.json([
+               "status": self.isLessonActive ? "Aula Iniciada" : "Aguardando",
+               "duration": self.timeRemaining
+           ]))
+       }
+
        server["/wsStatus"] = websocket(
                connected: { [weak self] session in
                    self?.connectedSessions.insert(session)
@@ -163,6 +171,23 @@ class TeacherState: NSObject, ObservableObject, NetServiceDelegate {
                }
            )
        
+       server.post["/update-status"] = { [weak self] request in
+           let data = Data(request.body)
+           guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+                 let uuid = json["uuid"],
+                 let statusString = json["status"],
+                 let status = StudentStatus(rawValue: statusString) else {
+               return .badRequest(nil)
+           }
+
+           DispatchQueue.main.async {
+               if let index = self?.students.firstIndex(where: { $0.id == uuid }) {
+                   self?.students[index].status = status
+               }
+           }
+           return .ok(.json(["status": "updated", "duracao": self?.timeRemaining ?? 0]))
+       }
+
        server.post["/join"] = { [weak self] request in
            let data = Data(request.body)
            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],

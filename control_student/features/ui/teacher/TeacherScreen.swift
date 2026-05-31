@@ -24,72 +24,6 @@ struct TeacherScreen: View {
         }
     }
 
-
-//    var studentStatusCard: some View {
-//        VStack(alignment: .leading, spacing: 12) {
-//
-////            Text("Status do Aluno")
-////                .font(.caption)
-////                .foregroundColor(.secondary)
-////
-////            HStack {
-////                VStack(alignment: .leading, spacing: 4) {
-////                    Text(studentStatusLabel)
-////                        .bold()
-////                        .foregroundColor(studentStatusColor)
-////
-////                    if manager.isLessonActive {
-////                        Text(formatTime(manager.timeRemaining))
-////                            .font(.system(size: 28, weight: .bold, design: .monospaced))
-////                            .foregroundColor(.primary)
-////                    }
-////                }
-////
-////                Spacer()
-////
-////                Circle()
-////                    .fill(studentStatusColor)
-////                    .frame(width: 12)
-////            }
-//
-////            if manager.exitRequested && !manager.canExit {
-////                Divider()
-////
-////                HStack(spacing: 12) {
-////                    Image(systemName: "hand.raised.fill")
-////                        .foregroundColor(.orange)
-////
-////                    VStack(alignment: .leading, spacing: 2) {
-////                        Text("Aluno solicitou encerramento")
-////                            .font(.subheadline).bold()
-////                        Text("Libere para permitir que ele encerre a aula.")
-////                            .font(.caption)
-////                            .foregroundColor(.secondary)
-////                    }
-////
-////                    Spacer()
-////
-////                    Button {
-////                        grantExit()
-////                    } label: {
-////                        Text("Liberar")
-////                            .bold()
-////                            .padding(.horizontal, 14)
-////                            .padding(.vertical, 8)
-////                            .background(Color.orange)
-////                            .foregroundColor(.white)
-////                            .cornerRadius(8)
-////                    }
-////                }
-////            }
-////        }
-////        .padding()
-////        .background(Color.secondary.opacity(0.08))
-////        .cornerRadius(12)
-//    }
-
-    // MARK: - Duration Control
-
     var durationControl: some View {
         VStack(spacing: 8) {
             HStack {
@@ -102,6 +36,9 @@ struct TeacherScreen: View {
             }
 
             Slider(value: $sessionDuration, in: 5...120, step: 5)
+                .onChange(of: sessionDuration) { newValue in
+                    manager.timeRemaining = Int(newValue) * 60
+                }
                 .disabled(manager.isLessonActive)
         }
         .padding()
@@ -109,7 +46,6 @@ struct TeacherScreen: View {
         .cornerRadius(12)
     }
 
-    // MARK: - Control Buttons
 
     var controlButtons: some View {
         VStack(spacing: 12) {
@@ -139,7 +75,6 @@ struct TeacherScreen: View {
 
             if manager.isLessonActive {
 
-                // pausar / retomar bloqueio
                 Button {
                     toggleLock()
                 } label: {
@@ -156,7 +91,6 @@ struct TeacherScreen: View {
                 }
             }
 
-            // finalizar aula
             Button {
                 cancelSession()
             } label: {
@@ -210,6 +144,7 @@ struct TeacherScreen: View {
         case .pending: return .yellow
         case .failure: return .red
         case .ok: return .green
+        case .started: return  .green
         }
     }
 

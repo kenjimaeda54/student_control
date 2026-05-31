@@ -88,6 +88,7 @@ struct StudentScreen: View {
         case .pending: return .yellow
         case .failure: return .red
         case .ok: return .green
+        case .started: return .green
         }
     }
 
@@ -105,12 +106,8 @@ struct StudentScreen: View {
                 Task {
                     isSending = true
                     sendError = false
-                    let success = await manager.startLessonWithoutScreenshot()
-                    if success {
-                        manager.showLessonSheet = true
-                    } else {
-                        sendError = true
-                    }
+                    await manager.notifyTeacherLessonStarted()
+                    manager.showLessonSheet = true
                     isSending = false
                 }
             } label: {
